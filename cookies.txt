@@ -1,9 +1,15 @@
-.instagram.com	TRUE	/	FALSE	1734611672	csrftoken	5RlQSes_VBq6ehHsGi0yof
-.instagram.com	TRUE	/	TRUE	1768851961	datr	-6owaJJOXl8ZEo7rGcfywLFH
-.instagram.com	TRUE	/	FALSE	1753026872	ds_user_id	68221453445
-.instagram.com	TRUE	/	TRUE	1768851989	ig_did	77B5DF90-81CF-44D2-9888-66D66EF1716A
-.instagram.com	TRUE	/	TRUE	1729968085	ig_direct_region_hint	PNB,68221453445,1782132086:01fe2b7b786de9b2d4a439f00d3e4fc7fe67d39414c6e40c41205e79c86088e0abe438f8
-.instagram.com	TRUE	/	FALSE	1729867014	mid	aFGxEwALAAFTIIab3nAAS3kG48aq
-.instagram.com	TRUE	/	TRUE	1769251311	ps_l	1
-.instagram.com	TRUE	/	TRUE	1769251311	ps_n	1
-.instagram.com	TRUE	/	TRUE	0	rur	VLL,68221453445,1782141272:01fe7bc72984971ace969d00babd6cdc690322dd864a2aaedd13106e462845088aee0f94
+# Netscape HTTP Cookie File
+# http://curl.haxx.se/rfc/cookie_spec.html
+# This is a generated file!  Do not edit.
+
+.instagram.com	TRUE	/	TRUE	1766158480	csrftoken	5RlQSes_VBq6ehHsGi0yof
+.instagram.com	TRUE	/	TRUE	1763571962	datr	-6owaJJOXl8ZEo7rGcfywLFH
+.instagram.com	TRUE	/	TRUE	1763571989	ig_did	77B5DF90-81CF-44D2-9888-66D66EF1716A
+.instagram.com	TRUE	/	TRUE	1758382480	ds_user_id	68221453445
+.instagram.com	TRUE	/	TRUE	1763932912	ps_l	1
+.instagram.com	TRUE	/	TRUE	1763932912	ps_n	1
+.instagram.com	TRUE	/	TRUE	1750789014	mid	aFGxEwALAAFTIIab3nAAS3kG48aq
+.instagram.com	TRUE	/	TRUE	1766132915	sessionid	68221453445%3Ac6VKYbIAjSwIYh%3A6%3AAYdBbbvtWQwOrnaePEjipi0iwJBJZqRKFekiVTfLiEI
+.instagram.com	TRUE	/	TRUE	1751200886	ig_direct_region_hint	"PNB\05468221453445\0541782132086:01fe2b7b786de9b2d4a439f00d3e4fc7fe67d39414c6e40c41205e79c86088e0abe438f8"
+.instagram.com	TRUE	/	TRUE	1751210081	wd	150x638
+.instagram.com	TRUE	/	TRUE	0	rur	"CLN\05468221453445\0541782142480:01fe3a6b0ced540fe19a945d13a271e554fd5aafdfabbd168af09877a8f0ef1308deecc9"

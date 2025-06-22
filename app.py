@@ -9,7 +9,7 @@ CORS(app)
 
 # Folder where downloaded videos will be stored
 DOWNLOAD_FOLDER = "downloads"
-COOKIE_FILE = "cookies.txt"  # <-- Ensure this file exists
+COOKIE_FILE = "cookies.txt"  # Make sure this is in Netscape format and in the same directory
 
 # Create folder if it doesn't exist
 if not os.path.exists(DOWNLOAD_FOLDER):
@@ -27,18 +27,15 @@ def download_video():
     if not url:
         return jsonify({"error": "No URL provided"}), 400
 
-    # Generate a random filename
     filename = f"{uuid.uuid4()}.mp4"
     filepath = os.path.join(DOWNLOAD_FOLDER, filename)
 
-    # yt-dlp options
     ydl_opts = {
         'outtmpl': filepath,
         'format': 'bestvideo+bestaudio/best',
         'quiet': True,
         'merge_output_format': 'mp4',
-        'cookiesfrombrowser': None,
-        'cookiefile': COOKIE_FILE
+        'cookiefile': COOKIE_FILE  # <-- This is the correct setting
     }
 
     try:
