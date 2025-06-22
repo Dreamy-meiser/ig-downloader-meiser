@@ -11,12 +11,13 @@ CORS(app)
 DOWNLOAD_FOLDER = "downloads"
 COOKIE_FILE = "cookies.txt"
 
+# Ensure download directory exists
 if not os.path.exists(DOWNLOAD_FOLDER):
     os.makedirs(DOWNLOAD_FOLDER)
 
 @app.route("/")
 def home():
-    return "🚀 Instagram Downloader Backend is running!"
+    return "Instagram Downloader Backend is running!"
 
 @app.route("/download", methods=["POST"])
 def download_video():
@@ -26,29 +27,33 @@ def download_video():
     if not url:
         return jsonify({"error": "No URL provided"}), 400
 
+    # Create unique filename
     filename = f"{uuid.uuid4()}.mp4"
     filepath = os.path.join(DOWNLOAD_FOLDER, filename)
 
     ydl_opts = {
         'outtmpl': filepath,
         'format': 'bestvideo+bestaudio/best',
-        'quiet': True,
         'merge_output_format': 'mp4',
+        'quiet': True,
         'cookiefile': COOKIE_FILE
     }
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
+        print(f"[✓] Downloaded: {filepath}")
 
+        # Auto-delete the file after 5 minutes
         Timer(300, auto_delete_file, [filepath]).start()
 
         return jsonify({
             "message": "Download successful",
-            "file_url": request.host_url + "video/" + filename
+            "file_url": f"https://ig-downloader-meiser.onrender.com/video/{filename}"
         }), 200
 
     except Exception as e:
+        print(f"[✗] Download failed: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route("/video/<filename>")
@@ -62,7 +67,7 @@ def serve_video(filename):
 def auto_delete_file(path):
     if os.path.exists(path):
         os.remove(path)
-        print(f"[Auto-Clean] Deleted {path}")
+        print(f"[⛔] Auto-deleted expired file: {path}")
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
