@@ -30,12 +30,13 @@ def download_video():
     filename = f"{uuid.uuid4()}.mp4"
     filepath = os.path.join(DOWNLOAD_FOLDER, filename)
 
-    # yt-dlp options
+    # yt-dlp options including cookies
     ydl_opts = {
         'outtmpl': filepath,
         'format': 'bestvideo+bestaudio/best',
         'quiet': True,
-        'merge_output_format': 'mp4'
+        'merge_output_format': 'mp4',
+        'cookiefile': 'cookies.txt'  # Make sure cookies.txt is in the same directory
     }
 
     try:
@@ -43,7 +44,7 @@ def download_video():
             ydl.download([url])
         return jsonify({
             "message": "Download successful",
-            "file_url": f"/video/{filename}"
+            "file_url": f"https://ig-downloader-meiser.onrender.com/video/{filename}"
         }), 200
 
     except Exception as e:
@@ -54,5 +55,4 @@ def serve_video(filename):
     return send_from_directory(DOWNLOAD_FOLDER, filename)
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(debug=True, host="0.0.0.0", port=port)
+    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
