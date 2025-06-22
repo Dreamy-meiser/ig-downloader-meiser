@@ -9,6 +9,7 @@ CORS(app)
 
 # Folder where downloaded videos will be stored
 DOWNLOAD_FOLDER = "downloads"
+COOKIE_FILE = "cookies.txt"  # <-- Ensure this file exists
 
 # Create folder if it doesn't exist
 if not os.path.exists(DOWNLOAD_FOLDER):
@@ -30,13 +31,14 @@ def download_video():
     filename = f"{uuid.uuid4()}.mp4"
     filepath = os.path.join(DOWNLOAD_FOLDER, filename)
 
-    # yt-dlp options including cookies
+    # yt-dlp options
     ydl_opts = {
         'outtmpl': filepath,
         'format': 'bestvideo+bestaudio/best',
         'quiet': True,
         'merge_output_format': 'mp4',
-        'cookiefile': 'cookies.txt'  # Make sure cookies.txt is in the same directory
+        'cookiesfrombrowser': None,
+        'cookiefile': COOKIE_FILE
     }
 
     try:
@@ -44,7 +46,7 @@ def download_video():
             ydl.download([url])
         return jsonify({
             "message": "Download successful",
-            "file_url": f"https://ig-downloader-meiser.onrender.com/video/{filename}"
+            "file_url": f"/video/{filename}"
         }), 200
 
     except Exception as e:
