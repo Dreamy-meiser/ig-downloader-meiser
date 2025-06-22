@@ -2,29 +2,17 @@ from flask import Flask, request, jsonify, send_from_directory
 import yt_dlp
 import os
 import uuid
-import threading
 from flask_cors import CORS
+from threading import Timer
 
 app = Flask(__name__)
 CORS(app)
 
 DOWNLOAD_FOLDER = "downloads"
 COOKIE_FILE = "cookies.txt"
-AUTO_DELETE_SECONDS = 600  # 10 minutes
 
 if not os.path.exists(DOWNLOAD_FOLDER):
     os.makedirs(DOWNLOAD_FOLDER)
-
-# Schedule automatic file deletion
-def schedule_delete(filepath):
-    def delete_file():
-        try:
-            if os.path.exists(filepath):
-                os.remove(filepath)
-                print(f"[AutoDelete] Deleted: {filepath}")
-        except Exception as e:
-            print(f"[AutoDelete Error] {e}")
-    threading.Timer(AUTO_DELETE_SECONDS, delete_file).start()
 
 @app.route("/")
 def home():
@@ -53,11 +41,11 @@ def download_video():
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
 
-        schedule_delete(filepath)
+        Timer(300, auto_delete_file, [filepath]).start()  # Auto-delete after 5 mins
 
         return jsonify({
             "message": "Download successful",
-            "file_url": f"/video/{filename}"
+            "file_url": request.host_url + "video/" + filename
         }), 200
 
     except Exception as e:
@@ -66,9 +54,15 @@ def download_video():
 @app.route("/video/<filename>")
 def serve_video(filename):
     filepath = os.path.join(DOWNLOAD_FOLDER, filename)
-    if not os.path.exists(filepath):
-        return jsonify({"error": "❌ This file has expired or been deleted."}), 404
-    return send_from_directory(DOWNLOAD_FOLDER, filename, as_attachment=True)
+    if os.path.exists(filepath):
+        return send_from_directory(DOWNLOAD_FOLDER, filename, as_attachment=True)
+    else:
+        return jsonify({"error": "❌ This video has expired or was deleted."}), 404
+
+def auto_delete_file(path):
+    if os.path.exists(path):
+        os.remove(path)
+        print(f"[Auto-Clean] Deleted {path}")
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
