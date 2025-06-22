@@ -16,7 +16,7 @@ if not os.path.exists(DOWNLOAD_FOLDER):
 
 @app.route("/")
 def home():
-    return "Instagram Downloader Backend is running!"
+    return "🚀 Instagram Downloader Backend is running!"
 
 @app.route("/download", methods=["POST"])
 def download_video():
@@ -41,7 +41,7 @@ def download_video():
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
 
-        Timer(300, auto_delete_file, [filepath]).start()  # Auto-delete after 5 mins
+        Timer(300, auto_delete_file, [filepath]).start()
 
         return jsonify({
             "message": "Download successful",
