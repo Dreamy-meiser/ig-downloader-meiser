@@ -2,19 +2,29 @@ from flask import Flask, request, jsonify, send_from_directory
 import yt_dlp
 import os
 import uuid
+import threading
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
 
-# Folder where downloaded videos will be stored
 DOWNLOAD_FOLDER = "downloads"
-COOKIE_FILE = "cookies.txt"  # Make sure this is in Netscape format and in the same directory
-BASE_URL = "https://ig-downloader-meiser.onrender.com"
+COOKIE_FILE = "cookies.txt"
+AUTO_DELETE_SECONDS = 600  # 10 minutes
 
-# Create folder if it doesn't exist
 if not os.path.exists(DOWNLOAD_FOLDER):
     os.makedirs(DOWNLOAD_FOLDER)
+
+# Schedule automatic file deletion
+def schedule_delete(filepath):
+    def delete_file():
+        try:
+            if os.path.exists(filepath):
+                os.remove(filepath)
+                print(f"[AutoDelete] Deleted: {filepath}")
+        except Exception as e:
+            print(f"[AutoDelete Error] {e}")
+    threading.Timer(AUTO_DELETE_SECONDS, delete_file).start()
 
 @app.route("/")
 def home():
@@ -31,29 +41,23 @@ def download_video():
     filename = f"{uuid.uuid4()}.mp4"
     filepath = os.path.join(DOWNLOAD_FOLDER, filename)
 
-    # Progress hook to print progress to console
-    def progress_hook(d):
-        if d['status'] == 'downloading':
-            percent = d.get('_percent_str', '').strip()
-            print(f"Downloading... {percent}")
-        elif d['status'] == 'finished':
-            print("Download complete!")
-
     ydl_opts = {
         'outtmpl': filepath,
         'format': 'bestvideo+bestaudio/best',
-        'quiet': False,
+        'quiet': True,
         'merge_output_format': 'mp4',
-        'cookiefile': COOKIE_FILE,
-        'progress_hooks': [progress_hook]
+        'cookiefile': COOKIE_FILE
     }
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
+
+        schedule_delete(filepath)
+
         return jsonify({
             "message": "Download successful",
-            "file_url": f"{BASE_URL}/video/{filename}"
+            "file_url": f"/video/{filename}"
         }), 200
 
     except Exception as e:
@@ -61,7 +65,10 @@ def download_video():
 
 @app.route("/video/<filename>")
 def serve_video(filename):
-    return send_from_directory(DOWNLOAD_FOLDER, filename)
+    filepath = os.path.join(DOWNLOAD_FOLDER, filename)
+    if not os.path.exists(filepath):
+        return jsonify({"error": "❌ This file has expired or been deleted."}), 404
+    return send_from_directory(DOWNLOAD_FOLDER, filename, as_attachment=True)
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
