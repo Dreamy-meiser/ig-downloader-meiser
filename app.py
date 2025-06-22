@@ -10,6 +10,7 @@ CORS(app)
 # Folder where downloaded videos will be stored
 DOWNLOAD_FOLDER = "downloads"
 COOKIE_FILE = "cookies.txt"  # Make sure this is in Netscape format and in the same directory
+BASE_URL = "https://ig-downloader-meiser.onrender.com"
 
 # Create folder if it doesn't exist
 if not os.path.exists(DOWNLOAD_FOLDER):
@@ -30,12 +31,21 @@ def download_video():
     filename = f"{uuid.uuid4()}.mp4"
     filepath = os.path.join(DOWNLOAD_FOLDER, filename)
 
+    # Progress hook to print progress to console
+    def progress_hook(d):
+        if d['status'] == 'downloading':
+            percent = d.get('_percent_str', '').strip()
+            print(f"Downloading... {percent}")
+        elif d['status'] == 'finished':
+            print("Download complete!")
+
     ydl_opts = {
         'outtmpl': filepath,
         'format': 'bestvideo+bestaudio/best',
-        'quiet': True,
+        'quiet': False,
         'merge_output_format': 'mp4',
-        'cookiefile': COOKIE_FILE  # <-- This is the correct setting
+        'cookiefile': COOKIE_FILE,
+        'progress_hooks': [progress_hook]
     }
 
     try:
@@ -43,7 +53,7 @@ def download_video():
             ydl.download([url])
         return jsonify({
             "message": "Download successful",
-            "file_url": f"/video/{filename}"
+            "file_url": f"{BASE_URL}/video/{filename}"
         }), 200
 
     except Exception as e:
