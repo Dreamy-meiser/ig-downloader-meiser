@@ -1,11 +1,11 @@
 from flask import Flask, request, jsonify, send_from_directory
-from flask_cors import CORS
 import yt_dlp
 import os
 import uuid
+from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # CORS must come after app = Flask(__name__)
+CORS(app)
 
 # Folder where downloaded videos will be stored
 DOWNLOAD_FOLDER = "downloads"
@@ -43,7 +43,7 @@ def download_video():
             ydl.download([url])
         return jsonify({
             "message": "Download successful",
-            "file_url": f"http://127.0.0.1:5000/video/{filename}"
+            "file_url": f"/video/{filename}"
         }), 200
 
     except Exception as e:
@@ -54,4 +54,5 @@ def serve_video(filename):
     return send_from_directory(DOWNLOAD_FOLDER, filename)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=True, host="0.0.0.0", port=port)
